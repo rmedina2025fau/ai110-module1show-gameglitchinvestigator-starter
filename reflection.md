@@ -31,7 +31,7 @@ I used Claude (Claude Code) to read the code, draft the fixes, write the tests, 
 
 A correct suggestion: moving `get_range_for_difficulty`, `parse_guess`, `check_guess`, and `update_score` into `logic_utils.py` and importing them in `app.py`. I checked it with `pytest` (14 passed) and by running the Streamlit app.
 
-[Renzo: add one AI suggestion you did not accept as written, what it was, and why you changed it.]
+A suggestion I did not accept: Claude suggested that `parse_guess` reject decimal input like "19.9" instead of truncating it to 19. I kept the current behavior. The secret is a whole number, so a guess of "19.9" that counts as 19 is a reasonable result for this game. I checked it by calling `parse_guess("19.9")`, which returns `(True, 19, None)`, and I left the code and tests unchanged.
 
 ---
 
