@@ -25,28 +25,44 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+**Purpose:** A number guessing game in Streamlit. The player guesses a secret number within a range, gets "go higher" or "go lower" hints, and has a limited number of attempts. Points are awarded for wins and taken away for wrong guesses.
+
+**Bugs found:**
+1. Hints were inverted. A guess above the secret said "go higher".
+2. New Game did not reset the game state. After a loss or win, input stayed blocked until a page refresh. New Game also ignored the difficulty range.
+3. The score went negative after several wrong guesses. The Too High penalty also depended on whether the attempt number was even or odd.
+4. The attempt counter started at 1, so the sidebar showed one fewer attempt left than the limit.
+5. On even attempts, the secret was compared as a string, so hints could be wrong (for example, "50" > "19" is false as strings).
+
+**Fixes applied:**
+- Moved `get_range_for_difficulty`, `parse_guess`, `check_guess`, and `update_score` into `logic_utils.py`. `app.py` imports them.
+- `check_guess` returns `(outcome, message)`. "Too High" now says "Go LOWER", and "Too Low" says "Go HIGHER".
+- Removed the string-secret branch. The secret is always compared as an integer.
+- New Game resets the secret (within the difficulty range), attempts, score, status, and history.
+- Wrong guesses cost 5 points and the score never goes below 0. A win gives 100 minus 10 per attempt, with a minimum of 10.
+- The attempt counter starts at 0.
+- Added pytest tests for each fix.
 
 ## 📸 Demo Walkthrough
 
 Describe your fixed game in numbered steps so a reader can follow along without watching a video:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. Run `python -m streamlit run app.py` and pick a difficulty in the sidebar. The sidebar shows the range and the attempts allowed.
+2. Enter a guess. The hint now matches the direction: a guess above the secret says "Go LOWER".
+3. Keep guessing until you win or run out of attempts. The score never goes below 0.
+4. After the game ends, click "New Game". The input works again, the attempts and score reset, and the new secret is in the difficulty's range.
+5. Guess the secret to win. The final score is shown in the success message.
 
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
+**Screenshot** *(optional)*: <!-- Not included -->
+
+_Note: the UI steps above were written from the code and were not clicked through in a browser for this submission._
 
 ## 🧪 Test Results
 
 ```
-# Paste your pytest output here, e.g.:
-# pytest tests/
-# ========================= X passed in 0.XXs =========================
+$ python -m pytest -q
+..............                                                           [100%]
+14 passed in 0.01s
 ```
 
 ## 🚀 Stretch Features

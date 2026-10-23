@@ -27,30 +27,30 @@ Document at least 3 bugs you found. Add rows as needed.
 
 ## 2. How did you use AI as a teammate?
 
-- Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
-- Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
-- Give one example of an AI suggestion you did not accept as written (including what the AI suggested, why you rejected or changed it, and how you verified your version). It does not have to be a suggestion that was wrong: over-engineered, out of scope, harder to read, or a poor fit for this codebase all count.
+I used Claude (Claude Code) to read the code, draft the fixes, write the tests, and draft this reflection. I looked at the code and the running app before and after each change.
+
+A correct suggestion: moving `get_range_for_difficulty`, `parse_guess`, `check_guess`, and `update_score` into `logic_utils.py` and importing them in `app.py`. I checked it with `pytest` (14 passed) and by running the Streamlit app.
+
+[Renzo: add one AI suggestion you did not accept as written, what it was, and why you changed it.]
 
 ---
 
 ## 3. Debugging and testing your fixes
 
-- How did you decide whether a bug was really fixed?
-- Describe at least one test you ran (manual or using pytest)  
-  and what it showed you about your code.
-- Did AI help you design or understand any tests? How?
+I counted a bug as fixed only when a test or a real run showed the correct behavior. For the hint bug, `test_too_high_hint_says_go_lower` checks that a guess above the secret says "LOWER". The test `test_guess_compares_as_numbers_not_strings` checks guess 50 against secret 19. The original code compared the secret as a string on even attempts, and "50" > "19" is false as strings, so this test guards against that. I did not run the old code against this test, so I cannot say it failed before the fix. Claude drafted the tests, and I ran them to confirm they pass on the fixed code.
 
 ---
 
 ## 4. What did you learn about Streamlit and state?
 
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+Every click reruns the whole script from top to bottom, so local variables start over each time. `st.session_state` is the only memory that survives those reruns. The New Game bug came from this: the code reset `attempts` and `secret`, but it did not reset `status`, so the saved "lost" state kept blocking input after the rerun.
 
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+Reproduce the bug in the running app before changing code, and write the expected result next to it. The bug table in section 1 is what made the fixes easy to check.
+
+Next time I want to check every state variable that a reset touches, not only the obvious ones.
+
+Passing tests does not prove the app works. The New Game bug was only visible when I played through the UI.
